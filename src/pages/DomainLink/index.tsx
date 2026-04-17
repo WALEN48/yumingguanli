@@ -12,6 +12,7 @@ import {
   message,
   Row,
   Col,
+  Divider,
 } from 'antd';
 import { PlusOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { DomainLink, Option } from '../../types';
@@ -43,6 +44,7 @@ const DomainLinkPage: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingRecord, setEditingRecord] = useState<DomainLink | null>(null);
   const [modalForm] = Form.useForm();
+  const [lastUpdateTime, setLastUpdateTime] = useState<string>('-');
 
   // 获取选项数据
   useEffect(() => {
@@ -58,12 +60,13 @@ const DomainLinkPage: React.FC = () => {
         subject: values.subject,
         status: values.status,
       };
-      
+
       const result = activeTab === 'payment'
         ? await getDomainLinks(query)
         : await getProtocolLinks(query);
-      
+
       setData(result);
+      setLastUpdateTime(new Date().toLocaleString('zh-CN'));
     } catch (error) {
       message.error('获取数据失败');
     } finally {
@@ -104,7 +107,7 @@ const DomainLinkPage: React.FC = () => {
   const handleSave = async () => {
     try {
       const values = await modalForm.validateFields();
-      
+
       if (editingRecord) {
         // 编辑
         if (activeTab === 'payment') {
@@ -122,7 +125,7 @@ const DomainLinkPage: React.FC = () => {
         }
         message.success('新增成功');
       }
-      
+
       setModalVisible(false);
       fetchData();
     } catch (error) {
@@ -180,69 +183,100 @@ const DomainLinkPage: React.FC = () => {
   ];
 
   return (
-    <Card bordered={false}>
-      <Tabs activeKey={activeTab} onChange={setActiveTab}>
-        <TabPane tab="微小iOS客服支付链接" key="payment" />
-        <TabPane tab="协议链接" key="protocol" />
-      </Tabs>
+    <>
+      {/* 筛选区 - 参考截图样式 */}
+      <Card bordered={false} style={{ marginBottom: 16 }}>
+        <Form form={searchForm} layout="inline">
+          <Row gutter={[16, 16]} align="middle" style={{ width: '100%' }}>
+            <Col>
+              <Form.Item
+                label="主体"
+                name="subject"
+                style={{ marginBottom: 0 }}
+                labelCol={{ style: { width: 80, textAlign: 'right' } }}
+              >
+                <Select
+                  placeholder="请选择主体"
+                  options={subjectOptions}
+                  showSearch
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  allowClear
+                  style={{ width: 200 }}
+                />
+              </Form.Item>
+            </Col>
+            <Col>
+              <Form.Item
+                label="展示状态"
+                name="status"
+                initialValue="all"
+                style={{ marginBottom: 0 }}
+                labelCol={{ style: { width: 80, textAlign: 'right' } }}
+              >
+                <Select options={statusOptions} style={{ width: 200 }} />
+              </Form.Item>
+            </Col>
+            <Col style={{ marginLeft: 'auto' }}>
+              <Form.Item style={{ marginBottom: 0 }}>
+                <Space>
+                  <Button
+                    type="primary"
+                    icon={<SearchOutlined />}
+                    onClick={handleSearch}
+                  >
+                    查询
+                  </Button>
+                  <Button icon={<ReloadOutlined />} onClick={handleReset}>
+                    重置
+                  </Button>
+                </Space>
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
 
-      {/* 搜索区 */}
-      <Form form={searchForm} layout="vertical">
-        <Row gutter={16} align="bottom">
-          <Col span={6}>
-            <Form.Item label="主体" name="subject">
-              <Select
-                placeholder="请选择主体"
-                options={subjectOptions}
-                showSearch
-                filterOption={(input, option) =>
-                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                }
-                allowClear
-              />
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item label="展示状态" name="status" initialValue="all">
-              <Select options={statusOptions} />
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item>
-              <Space>
-                <Button
-                  type="primary"
-                  icon={<SearchOutlined />}
-                  onClick={handleSearch}
-                >
-                  查询
-                </Button>
-                <Button icon={<ReloadOutlined />} onClick={handleReset}>
-                  重置
-                </Button>
-              </Space>
-            </Form.Item>
-          </Col>
-          <Col span={6} style={{ textAlign: 'right' }}>
+      {/* 列表区 */}
+      <Card bordered={false}>
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          tabBarExtraContent={
             <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
               新增链接
             </Button>
+          }
+        >
+          <TabPane tab="微小iOS客服支付链接" key="payment" />
+          <TabPane tab="协议链接" key="protocol" />
+        </Tabs>
+
+        <Divider style={{ margin: '16px 0' }} />
+
+        {/* 更新时间和操作栏 */}
+        <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+          <Col>
+            <span style={{ color: '#666', fontSize: 14 }}>
+              最后更新时间：{lastUpdateTime}
+            </span>
           </Col>
         </Row>
-      </Form>
 
-      {/* 表格 */}
-      <Table
-        columns={columns}
-        dataSource={data}
-        rowKey="id"
-        loading={loading}
-        pagination={{
-          pageSize: 10,
-          showSizeChanger: true,
-          showTotal: (total) => `共 ${total} 条`,
-        }}
-      />
+        {/* 表格 */}
+        <Table
+          columns={columns}
+          dataSource={data}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+            showTotal: (total) => `共 ${total} 条`,
+          }}
+        />
+      </Card>
 
       {/* 弹窗 */}
       <Modal
@@ -252,10 +286,12 @@ const DomainLinkPage: React.FC = () => {
         onCancel={() => setModalVisible(false)}
         width={560}
         destroyOnClose
+        okText="保存"
+        cancelText="取消"
       >
         <DomainLinkForm form={modalForm} initialValues={editingRecord || undefined} />
       </Modal>
-    </Card>
+    </>
   );
 };
 
