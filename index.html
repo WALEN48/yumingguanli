@@ -1,13 +1,1281 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>发行运营后台</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发行运营后台 - 微小iOS支付管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            width: 200px;
+            background: #001529;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            background: #002140;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #1890ff, #36cfc9);
+            border-radius: 6px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .menu {
+            padding: 8px 0;
+        }
+
+        .menu-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            color: rgba(255,255,255,0.65);
+        }
+
+        .menu-item:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .menu-item.active {
+            color: #fff;
+            background: #1890ff;
+        }
+
+        .menu-icon {
+            width: 16px;
+            margin-right: 10px;
+            text-align: center;
+        }
+
+        .menu-arrow {
+            margin-left: auto;
+            font-size: 12px;
+        }
+
+        .submenu {
+            background: rgba(0,0,0,0.15);
+        }
+
+        .submenu-item {
+            padding: 10px 24px 10px 50px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.65);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .submenu-item:hover, .submenu-item.active {
+            color: #fff;
+        }
+
+        /* 主内容区 */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 顶部导航 */
+        .header {
+            height: 64px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-tabs {
+            display: flex;
+            flex: 1;
+            gap: 8px;
+        }
+
+        .header-tab {
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .header-tab:hover {
+            background: #e8e8e8;
+        }
+
+        .header-tab.active {
+            background: #1890ff;
+            color: #fff;
+        }
+
+        .header-tab .close {
+            font-size: 12px;
+            opacity: 0.6;
+        }
+
+        .header-tab .close:hover {
+            opacity: 1;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #1890ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        /* 内容区 */
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow: auto;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .breadcrumb a {
+            color: #1890ff;
+            text-decoration: none;
+        }
+
+        /* 页面标题 */
+        .page-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            color: #333;
+        }
+
+        /* 子页签 */
+        .sub-tabs {
+            display: flex;
+            border-bottom: 1px solid #e8e8e8;
+            margin-bottom: 24px;
+        }
+
+        .sub-tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .sub-tab:hover {
+            color: #1890ff;
+        }
+
+        .sub-tab.active {
+            color: #1890ff;
+            border-bottom-color: #1890ff;
+        }
+
+        /* 搜索区域 */
+        .search-area {
+            background: #fff;
+            padding: 24px;
+            border-radius: 4px;
+            margin-bottom: 24px;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px 24px;
+        }
+
+        .form-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-item label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .form-item input,
+        .form-item select {
+            height: 32px;
+            padding: 0 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-item input:focus,
+        .form-item select:focus {
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24,144,255,0.2);
+        }
+
+        .search-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        /* 按钮 */
+        .btn {
+            height: 32px;
+            padding: 0 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #1890ff;
+            color: #fff;
+            border-color: #1890ff;
+        }
+
+        .btn-primary:hover {
+            background: #40a9ff;
+            border-color: #40a9ff;
+        }
+
+        .btn-default {
+            background: #fff;
+            color: #666;
+            border-color: #d9d9d9;
+        }
+
+        .btn-default:hover {
+            color: #1890ff;
+            border-color: #1890ff;
+        }
+
+        .btn-success {
+            background: #52c41a;
+            color: #fff;
+            border-color: #52c41a;
+        }
+
+        .btn-success:hover {
+            background: #73d13d;
+            border-color: #73d13d;
+        }
+
+        .btn-danger {
+            background: #ff4d4f;
+            color: #fff;
+            border-color: #ff4d4f;
+        }
+
+        .btn-danger:hover {
+            background: #ff7875;
+            border-color: #ff7875;
+        }
+
+        .btn-link {
+            background: transparent;
+            color: #1890ff;
+            padding: 0 8px;
+        }
+
+        .btn-link:hover {
+            color: #40a9ff;
+        }
+
+        /* 表格区域 */
+        .table-area {
+            background: #fff;
+            padding: 24px;
+            border-radius: 4px;
+        }
+
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .table-title {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+        }
+
+        .table th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .table tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        .table .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* 状态标签 */
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .tag-success {
+            background: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+
+        .tag-error {
+            background: #fff1f0;
+            color: #ff4d4f;
+            border: 1px solid #ffa39e;
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .pagination-btn {
+            min-width: 32px;
+            height: 32px;
+            padding: 0 8px;
+            border: 1px solid #d9d9d9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            color: #1890ff;
+            border-color: #1890ff;
+        }
+
+        .pagination-btn.active {
+            background: #1890ff;
+            color: #fff;
+            border-color: #1890ff;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 4px;
+            width: 520px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: auto;
+        }
+
+        .modal-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .modal-close {
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .modal-close:hover {
+            color: #666;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .form-row {
+            margin-bottom: 16px;
+        }
+
+        .form-row label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .form-row label .required {
+            color: #ff4d4f;
+            margin-left: 4px;
+        }
+
+        .form-row input,
+        .form-row select {
+            width: 100%;
+            height: 32px;
+            padding: 0 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-row input:focus,
+        .form-row select:focus {
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24,144,255,0.2);
+        }
+
+        .form-row input:disabled,
+        .form-row select:disabled {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        /* 隐藏元素 */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🎮</div>
+                <span>发行运营后台</span>
+            </div>
+            <nav class="menu">
+                <div class="menu-item active" onclick="showPage('domain-mgmt')">
+                    <span class="menu-icon">🔗</span>
+                    <span>平台域名链接管理</span>
+                </div>
+                <div class="menu-item" onclick="showPage('payment-link-mgmt')">
+                    <span class="menu-icon">💳</span>
+                    <span>微小iOS客服支付链接管理</span>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- 主内容 -->
+        <main class="main">
+            <!-- 顶部导航 -->
+            <header class="header">
+                <div class="header-tabs">
+                    <div class="header-tab active">
+                        <span>综合报表</span>
+                        <span class="close">✕</span>
+                    </div>
+                    <div class="header-tab" id="payment-tab" style="display:none;">
+                        <span>微小iOS客服支付链接管理</span>
+                        <span class="close">✕</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span style="color:#666;font-size:14px;">卢俊杰</span>
+                    <div class="user-info">
+                        <div class="user-avatar">卢</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容区 -->
+            <div class="content">
+                <!-- 平台域名链接管理页面 -->
+                <div id="page-domain-mgmt" class="page">
+                    <div class="breadcrumb">
+                        <a href="#">首页</a>
+                        <span>/</span>
+                        <span>平台域名链接管理</span>
+                    </div>
+
+                    <h1 class="page-title">平台域名链接管理</h1>
+
+                    <!-- 子页签 -->
+                    <div class="sub-tabs">
+                        <div class="sub-tab active" onclick="switchSubTab('ios-payment')">微小iOS客服支付链接</div>
+                        <div class="sub-tab" onclick="switchSubTab('agreement')">协议链接</div>
+                    </div>
+
+                    <!-- 微小iOS客服支付链接 -->
+                    <div id="subtab-ios-payment" class="subtab-content">
+                        <div class="search-area">
+                            <div class="search-form">
+                                <div class="form-item">
+                                    <label>主体</label>
+                                    <select id="ios-filter-subject">
+                                        <option value="">全部</option>
+                                        <option value="主体A">主体A</option>
+                                        <option value="主体B">主体B</option>
+                                        <option value="主体C">主体C</option>
+                                    </select>
+                                </div>
+                                <div class="form-item">
+                                    <label>展示状态</label>
+                                    <select id="ios-filter-status">
+                                        <option value="">全部</option>
+                                        <option value="enabled">启用</option>
+                                        <option value="disabled">禁用</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="search-buttons">
+                                <button class="btn btn-default" onclick="resetFilter('ios')">重置</button>
+                                <button class="btn btn-primary" onclick="searchData('ios')">查询</button>
+                            </div>
+                        </div>
+
+                        <div class="table-area">
+                            <div class="table-toolbar">
+                                <div class="table-title">微小iOS客服支付链接列表</div>
+                                <button class="btn btn-success" onclick="openModal('ios-add')">
+                                    <span>+</span> 新增链接
+                                </button>
+                            </div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>链接地址</th>
+                                        <th>主体</th>
+                                        <th>展示状态</th>
+                                        <th>最后编辑人</th>
+                                        <th>最后编辑时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ios-table-body">
+                                    <tr>
+                                        <td>https://pay.example.com/ios/service1</td>
+                                        <td>主体A</td>
+                                        <td><span class="tag tag-success">启用</span></td>
+                                        <td>张三</td>
+                                        <td>2026-04-18 10:30:00</td>
+                                        <td class="actions">
+                                            <button class="btn btn-link" onclick="editItem('ios', 1)">编辑</button>
+                                            <button class="btn btn-link" style="color:#ff4d4f;" onclick="deleteItem(1)">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>https://pay.example.com/ios/service2</td>
+                                        <td>主体B</td>
+                                        <td><span class="tag tag-error">禁用</span></td>
+                                        <td>李四</td>
+                                        <td>2026-04-17 16:45:00</td>
+                                        <td class="actions">
+                                            <button class="btn btn-link" onclick="editItem('ios', 2)">编辑</button>
+                                            <button class="btn btn-link" style="color:#ff4d4f;" onclick="deleteItem(2)">删除</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="pagination">
+                                <button class="pagination-btn" disabled>上一页</button>
+                                <button class="pagination-btn active">1</button>
+                                <button class="pagination-btn">2</button>
+                                <button class="pagination-btn">3</button>
+                                <button class="pagination-btn">下一页</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 协议链接 -->
+                    <div id="subtab-agreement" class="subtab-content hidden">
+                        <div class="search-area">
+                            <div class="search-form">
+                                <div class="form-item">
+                                    <label>主体</label>
+                                    <select id="agreement-filter-subject">
+                                        <option value="">全部</option>
+                                        <option value="主体A">主体A</option>
+                                        <option value="主体B">主体B</option>
+                                        <option value="主体C">主体C</option>
+                                    </select>
+                                </div>
+                                <div class="form-item">
+                                    <label>展示状态</label>
+                                    <select id="agreement-filter-status">
+                                        <option value="">全部</option>
+                                        <option value="enabled">启用</option>
+                                        <option value="disabled">禁用</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="search-buttons">
+                                <button class="btn btn-default" onclick="resetFilter('agreement')">重置</button>
+                                <button class="btn btn-primary" onclick="searchData('agreement')">查询</button>
+                            </div>
+                        </div>
+
+                        <div class="table-area">
+                            <div class="table-toolbar">
+                                <div class="table-title">协议链接列表</div>
+                                <button class="btn btn-success" onclick="openModal('agreement-add')">
+                                    <span>+</span> 新增链接
+                                </button>
+                            </div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>链接地址</th>
+                                        <th>主体</th>
+                                        <th>展示状态</th>
+                                        <th>最后编辑人</th>
+                                        <th>最后编辑时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="agreement-table-body">
+                                    <tr>
+                                        <td>https://agreement.example.com/terms</td>
+                                        <td>主体A</td>
+                                        <td><span class="tag tag-success">启用</span></td>
+                                        <td>王五</td>
+                                        <td>2026-04-18 09:00:00</td>
+                                        <td class="actions">
+                                            <button class="btn btn-link" onclick="editItem('agreement', 1)">编辑</button>
+                                            <button class="btn btn-link" style="color:#ff4d4f;" onclick="deleteItem(1)">删除</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="pagination">
+                                <button class="pagination-btn" disabled>上一页</button>
+                                <button class="pagination-btn active">1</button>
+                                <button class="pagination-btn">下一页</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 微小iOS客服支付链接管理页面 -->
+                <div id="page-payment-link-mgmt" class="page hidden">
+                    <div class="breadcrumb">
+                        <a href="#">首页</a>
+                        <span>/</span>
+                        <span>微小iOS客服支付链接管理</span>
+                    </div>
+
+                    <h1 class="page-title">微小iOS客服支付链接管理</h1>
+
+                    <div class="search-area">
+                        <div class="search-form">
+                            <div class="form-item">
+                                <label>游戏</label>
+                                <select id="mgmt-filter-game">
+                                    <option value="">全部</option>
+                                    <option value="游戏A">游戏A</option>
+                                    <option value="游戏B">游戏B</option>
+                                    <option value="游戏C">游戏C</option>
+                                </select>
+                            </div>
+                            <div class="form-item">
+                                <label>渠道</label>
+                                <select id="mgmt-filter-channel">
+                                    <option value="">全部</option>
+                                    <option value="App Store">App Store</option>
+                                    <option value="TestFlight">TestFlight</option>
+                                    <option value="企业签">企业签</option>
+                                </select>
+                            </div>
+                            <div class="form-item">
+                                <label>主体</label>
+                                <select id="mgmt-filter-subject">
+                                    <option value="">全部</option>
+                                    <option value="主体A">主体A</option>
+                                    <option value="主体B">主体B</option>
+                                    <option value="主体C">主体C</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="search-buttons">
+                            <button class="btn btn-default" onclick="resetFilter('mgmt')">重置</button>
+                            <button class="btn btn-primary" onclick="searchData('mgmt')">查询</button>
+                        </div>
+                    </div>
+
+                    <div class="table-area">
+                        <div class="table-toolbar">
+                            <div class="table-title">游戏渠道支付链接配置列表</div>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>游戏</th>
+                                    <th>渠道</th>
+                                    <th>支付链接</th>
+                                    <th>主体</th>
+                                    <th>最后编辑人</th>
+                                    <th>最后编辑时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mgmt-table-body">
+                                <tr>
+                                    <td>游戏A</td>
+                                    <td>App Store</td>
+                                    <td>https://pay.example.com/ios/service1</td>
+                                    <td>主体A</td>
+                                    <td>张三</td>
+                                    <td>2026-04-18 10:30:00</td>
+                                    <td class="actions">
+                                        <button class="btn btn-link" onclick="openEditModal(1)">编辑</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>游戏B</td>
+                                    <td>TestFlight</td>
+                                    <td>https://pay.example.com/ios/service2</td>
+                                    <td>主体B</td>
+                                    <td>李四</td>
+                                    <td>2026-04-17 16:45:00</td>
+                                    <td class="actions">
+                                        <button class="btn btn-link" onclick="openEditModal(2)">编辑</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>游戏C</td>
+                                    <td>企业签</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td class="actions">
+                                        <button class="btn btn-link" onclick="openEditModal(3)">编辑</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="pagination">
+                            <button class="pagination-btn" disabled>上一页</button>
+                            <button class="pagination-btn active">1</button>
+                            <button class="pagination-btn">2</button>
+                            <button class="pagination-btn">下一页</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 新增iOS支付链接模态框 -->
+    <div class="modal-overlay" id="modal-ios-add">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">新增微小iOS客服支付链接</h3>
+                <button class="modal-close" onclick="closeModal('ios-add')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <label>链接地址 <span class="required">*</span></label>
+                    <input type="text" id="ios-add-url" placeholder="请输入链接地址">
+                </div>
+                <div class="form-row">
+                    <label>主体 <span class="required">*</span></label>
+                    <select id="ios-add-subject">
+                        <option value="">请选择主体</option>
+                        <option value="主体A">主体A</option>
+                        <option value="主体B">主体B</option>
+                        <option value="主体C">主体C</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label>展示状态</label>
+                    <select id="ios-add-status">
+                        <option value="enabled" selected>启用</option>
+                        <option value="disabled">禁用</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('ios-add')">取消</button>
+                <button class="btn btn-primary" onclick="saveItem('ios')">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增协议链接模态框 -->
+    <div class="modal-overlay" id="modal-agreement-add">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">新增协议链接</h3>
+                <button class="modal-close" onclick="closeModal('agreement-add')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <label>链接地址 <span class="required">*</span></label>
+                    <input type="text" id="agreement-add-url" placeholder="请输入链接地址">
+                </div>
+                <div class="form-row">
+                    <label>主体 <span class="required">*</span></label>
+                    <select id="agreement-add-subject">
+                        <option value="">请选择主体</option>
+                        <option value="主体A">主体A</option>
+                        <option value="主体B">主体B</option>
+                        <option value="主体C">主体C</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label>展示状态</label>
+                    <select id="agreement-add-status">
+                        <option value="enabled" selected>启用</option>
+                        <option value="disabled">禁用</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('agreement-add')">取消</button>
+                <button class="btn btn-primary" onclick="saveItem('agreement')">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑支付链接配置模态框 -->
+    <div class="modal-overlay" id="modal-edit-mgmt">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">编辑支付链接配置</h3>
+                <button class="modal-close" onclick="closeModal('edit-mgmt')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <label>游戏</label>
+                    <input type="text" id="edit-game" disabled>
+                </div>
+                <div class="form-row">
+                    <label>渠道</label>
+                    <input type="text" id="edit-channel" disabled>
+                </div>
+                <div class="form-row">
+                    <label>主体 <span class="required">*</span></label>
+                    <select id="edit-subject" onchange="updateLinkOptions()">
+                        <option value="">请选择主体</option>
+                        <option value="主体A">主体A</option>
+                        <option value="主体B">主体B</option>
+                        <option value="主体C">主体C</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label>支付链接 <span class="required">*</span></label>
+                    <select id="edit-link">
+                        <option value="">请先选择主体</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('edit-mgmt')">取消</button>
+                <button class="btn btn-primary" onclick="saveMgmtEdit()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据存储
+        const mockData = {
+            iosLinks: [
+                { id: 1, url: 'https://pay.example.com/ios/service1', subject: '主体A', status: 'enabled', editor: '张三', time: '2026-04-18 10:30:00' },
+                { id: 2, url: 'https://pay.example.com/ios/service2', subject: '主体B', status: 'disabled', editor: '李四', time: '2026-04-17 16:45:00' }
+            ],
+            agreementLinks: [
+                { id: 1, url: 'https://agreement.example.com/terms', subject: '主体A', status: 'enabled', editor: '王五', time: '2026-04-18 09:00:00' }
+            ],
+            mgmtConfigs: [
+                { id: 1, game: '游戏A', channel: 'App Store', link: 'https://pay.example.com/ios/service1', subject: '主体A', editor: '张三', time: '2026-04-18 10:30:00' },
+                { id: 2, game: '游戏B', channel: 'TestFlight', link: 'https://pay.example.com/ios/service2', subject: '主体B', editor: '李四', time: '2026-04-17 16:45:00' },
+                { id: 3, game: '游戏C', channel: '企业签', link: '', subject: '', editor: '', time: '' }
+            ],
+            // 主体对应的链接选项
+            subjectLinks: {
+                '主体A': ['https://pay.example.com/ios/service1', 'https://pay.example.com/ios/service3'],
+                '主体B': ['https://pay.example.com/ios/service2', 'https://pay.example.com/ios/service4'],
+                '主体C': ['https://pay.example.com/ios/service5']
+            }
+        };
+
+        let currentEditId = null;
+
+        // 页面切换
+        function showPage(pageName) {
+            // 隐藏所有页面
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            // 显示目标页面
+            document.getElementById(`page-${pageName}`).classList.remove('hidden');
+
+            // 更新菜单激活状态
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // 更新顶部标签
+            if (pageName === 'payment-link-mgmt') {
+                document.getElementById('payment-tab').style.display = 'flex';
+            } else {
+                document.getElementById('payment-tab').style.display = 'none';
+            }
+        }
+
+        // 子页签切换
+        function switchSubTab(tabName) {
+            // 更新标签样式
+            document.querySelectorAll('.sub-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // 切换内容
+            document.querySelectorAll('.subtab-content').forEach(content => content.classList.add('hidden'));
+            document.getElementById(`subtab-${tabName}`).classList.remove('hidden');
+        }
+
+        // 打开模态框
+        function openModal(type) {
+            document.getElementById(`modal-${type}`).classList.add('active');
+        }
+
+        // 关闭模态框
+        function closeModal(type) {
+            document.getElementById(`modal-${type}`).classList.remove('active');
+            // 清空表单
+            if (type === 'ios-add') {
+                document.getElementById('ios-add-url').value = '';
+                document.getElementById('ios-add-subject').value = '';
+                document.getElementById('ios-add-status').value = 'enabled';
+            } else if (type === 'agreement-add') {
+                document.getElementById('agreement-add-url').value = '';
+                document.getElementById('agreement-add-subject').value = '';
+                document.getElementById('agreement-add-status').value = 'enabled';
+            }
+        }
+
+        // 保存新增
+        function saveItem(type) {
+            if (type === 'ios') {
+                const url = document.getElementById('ios-add-url').value;
+                const subject = document.getElementById('ios-add-subject').value;
+                const status = document.getElementById('ios-add-status').value;
+                
+                if (!url || !subject) {
+                    alert('请填写必填项');
+                    return;
+                }
+
+                const newItem = {
+                    id: Date.now(),
+                    url,
+                    subject,
+                    status,
+                    editor: '当前用户',
+                    time: new Date().toLocaleString('zh-CN')
+                };
+                mockData.iosLinks.push(newItem);
+                renderIosTable();
+            } else if (type === 'agreement') {
+                const url = document.getElementById('agreement-add-url').value;
+                const subject = document.getElementById('agreement-add-subject').value;
+                const status = document.getElementById('agreement-add-status').value;
+                
+                if (!url || !subject) {
+                    alert('请填写必填项');
+                    return;
+                }
+
+                const newItem = {
+                    id: Date.now(),
+                    url,
+                    subject,
+                    status,
+                    editor: '当前用户',
+                    time: new Date().toLocaleString('zh-CN')
+                };
+                mockData.agreementLinks.push(newItem);
+                renderAgreementTable();
+            }
+            closeModal(`${type}-add`);
+        }
+
+        // 编辑项
+        function editItem(type, id) {
+            // 这里可以实现编辑逻辑
+            alert(`编辑${type === 'ios' ? 'iOS支付链接' : '协议链接'} ID: ${id}`);
+        }
+
+        // 删除项
+        function deleteItem(id) {
+            if (confirm('确定要删除这条记录吗？')) {
+                // 这里可以实现删除逻辑
+                alert(`删除 ID: ${id}`);
+            }
+        }
+
+        // 筛选功能
+        function searchData(type) {
+            alert('执行查询');
+        }
+
+        // 重置筛选
+        function resetFilter(type) {
+            if (type === 'ios') {
+                document.getElementById('ios-filter-subject').value = '';
+                document.getElementById('ios-filter-status').value = '';
+            } else if (type === 'agreement') {
+                document.getElementById('agreement-filter-subject').value = '';
+                document.getElementById('agreement-filter-status').value = '';
+            } else if (type === 'mgmt') {
+                document.getElementById('mgmt-filter-game').value = '';
+                document.getElementById('mgmt-filter-channel').value = '';
+                document.getElementById('mgmt-filter-subject').value = '';
+            }
+        }
+
+        // 渲染iOS表格
+        function renderIosTable() {
+            const tbody = document.getElementById('ios-table-body');
+            tbody.innerHTML = mockData.iosLinks.map(item => `
+                <tr>
+                    <td>${item.url}</td>
+                    <td>${item.subject}</td>
+                    <td><span class="tag ${item.status === 'enabled' ? 'tag-success' : 'tag-error'}">${item.status === 'enabled' ? '启用' : '禁用'}</span></td>
+                    <td>${item.editor}</td>
+                    <td>${item.time}</td>
+                    <td class="actions">
+                        <button class="btn btn-link" onclick="editItem('ios', ${item.id})">编辑</button>
+                        <button class="btn btn-link" style="color:#ff4d4f;" onclick="deleteItem(${item.id})">删除</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 渲染协议表格
+        function renderAgreementTable() {
+            const tbody = document.getElementById('agreement-table-body');
+            tbody.innerHTML = mockData.agreementLinks.map(item => `
+                <tr>
+                    <td>${item.url}</td>
+                    <td>${item.subject}</td>
+                    <td><span class="tag ${item.status === 'enabled' ? 'tag-success' : 'tag-error'}">${item.status === 'enabled' ? '启用' : '禁用'}</span></td>
+                    <td>${item.editor}</td>
+                    <td>${item.time}</td>
+                    <td class="actions">
+                        <button class="btn btn-link" onclick="editItem('agreement', ${item.id})">编辑</button>
+                        <button class="btn btn-link" style="color:#ff4d4f;" onclick="deleteItem(${item.id})">删除</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 打开编辑模态框
+        function openEditModal(id) {
+            const config = mockData.mgmtConfigs.find(c => c.id === id);
+            if (!config) return;
+
+            currentEditId = id;
+            document.getElementById('edit-game').value = config.game;
+            document.getElementById('edit-channel').value = config.channel;
+            document.getElementById('edit-subject').value = config.subject || '';
+            
+            // 更新链接选项
+            updateLinkOptions(config.link);
+            
+            document.getElementById('modal-edit-mgmt').classList.add('active');
+        }
+
+        // 更新链接选项（根据主体）
+        function updateLinkOptions(selectedLink = '') {
+            const subject = document.getElementById('edit-subject').value;
+            const linkSelect = document.getElementById('edit-link');
+            
+            linkSelect.innerHTML = '<option value="">请选择链接</option>';
+            
+            if (subject && mockData.subjectLinks[subject]) {
+                mockData.subjectLinks[subject].forEach(link => {
+                    const option = document.createElement('option');
+                    option.value = link;
+                    option.textContent = link;
+                    if (link === selectedLink) {
+                        option.selected = true;
+                    }
+                    linkSelect.appendChild(option);
+                });
+            }
+        }
+
+        // 保存管理编辑
+        function saveMgmtEdit() {
+            const subject = document.getElementById('edit-subject').value;
+            const link = document.getElementById('edit-link').value;
+            
+            if (!subject || !link) {
+                alert('请填写必填项');
+                return;
+            }
+
+            const config = mockData.mgmtConfigs.find(c => c.id === currentEditId);
+            if (config) {
+                config.subject = subject;
+                config.link = link;
+                config.editor = '当前用户';
+                config.time = new Date().toLocaleString('zh-CN');
+            }
+
+            // 刷新表格
+            renderMgmtTable();
+            closeModal('edit-mgmt');
+        }
+
+        // 渲染管理表格
+        function renderMgmtTable() {
+            const tbody = document.getElementById('mgmt-table-body');
+            tbody.innerHTML = mockData.mgmtConfigs.map(item => `
+                <tr>
+                    <td>${item.game}</td>
+                    <td>${item.channel}</td>
+                    <td>${item.link || '-'}</td>
+                    <td>${item.subject || '-'}</td>
+                    <td>${item.editor || '-'}</td>
+                    <td>${item.time || '-'}</td>
+                    <td class="actions">
+                        <button class="btn btn-link" onclick="openEditModal(${item.id})">编辑</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 点击模态框外部关闭
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
 </html>

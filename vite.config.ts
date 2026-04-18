@@ -3,12 +3,15 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/-/',
-  server: {
-    port: 3000,
-    open: true
-  },
+  base: './',
   build: {
-    outDir: 'dist'
+    outDir: 'dist',
+    assetsDir: '.',
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+        inlineDynamicImports: true,
+      }
+    }
   }
 })
