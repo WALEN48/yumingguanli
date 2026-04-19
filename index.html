@@ -136,6 +136,35 @@
             background: rgba(255,255,255,0.05);
         }
 
+        /* 备注链接样式 */
+        .remark-link {
+            color: #1890ff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .remark-link:hover {
+            text-decoration: underline;
+        }
+
+        /* 文本域样式 */
+        textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        textarea:focus {
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24,144,255,0.2);
+        }
+
         /* 主内容区 */
         .main {
             flex: 1;
@@ -1008,7 +1037,7 @@
                 </div>
                 <div class="form-row">
                     <label>备注</label>
-                    <input type="text" id="ios-add-remark" placeholder="请输入备注">
+                    <textarea id="ios-add-remark" placeholder="请输入备注" rows="3"></textarea>
                 </div>
                 <div class="form-row">
                     <label>展示状态</label>
@@ -1048,7 +1077,7 @@
                 </div>
                 <div class="form-row">
                     <label>备注</label>
-                    <input type="text" id="agreement-add-remark" placeholder="请输入备注">
+                    <textarea id="agreement-add-remark" placeholder="请输入备注" rows="3"></textarea>
                 </div>
                 <div class="form-row">
                     <label>展示状态</label>
@@ -1114,7 +1143,7 @@
             <div class="modal-body">
                 <div class="form-row">
                     <label>备注</label>
-                    <input type="text" id="edit-remark-input" placeholder="请输入备注">
+                    <textarea id="edit-remark-input" placeholder="请输入备注" rows="3"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1388,7 +1417,7 @@
                 <tr>
                     <td>${item.url}</td>
                     <td>${subjectEnum[item.subjectId] || item.subjectId}</td>
-                    <td class="remark-cell" onclick="openRemarkModal('ios', ${item.id}, '${remarkValue}')" style="cursor:pointer;color:#1890ff;text-decoration:underline;">${remarkText}</td>
+                    <td><a href="javascript:void(0)" class="remark-link" onclick="openRemarkModal('ios', ${item.id}, '${remarkValue}')">${remarkText}</a></td>
                     <td>
                         <label class="switch">
                             <input type="checkbox" ${item.status === 'enabled' ? 'checked' : ''} onchange="toggleStatus('ios', ${item.id}, this)">
@@ -1411,7 +1440,7 @@
                 <tr>
                     <td>${item.url}</td>
                     <td>${subjectEnum[item.subjectId] || item.subjectId}</td>
-                    <td class="remark-cell" onclick="openRemarkModal('agreement', ${item.id}, '${remarkValue}')" style="cursor:pointer;color:#1890ff;text-decoration:underline;">${remarkText}</td>
+                    <td><a href="javascript:void(0)" class="remark-link" onclick="openRemarkModal('agreement', ${item.id}, '${remarkValue}')">${remarkText}</a></td>
                     <td>
                         <label class="switch">
                             <input type="checkbox" ${item.status === 'enabled' ? 'checked' : ''} onchange="toggleStatus('agreement', ${item.id}, this)">
