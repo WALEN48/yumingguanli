@@ -842,18 +842,19 @@
                                 <label>游戏</label>
                                 <select id="mgmt-filter-game">
                                     <option value="">全部</option>
-                                    <option value="游戏A">游戏A</option>
-                                    <option value="游戏B">游戏B</option>
-                                    <option value="游戏C">游戏C</option>
+                                    <option value="1">[1]青木</option>
+                                    <option value="2">[2]代号f</option>
+                                    <option value="3">[3]幻灵鬼服</option>
+                                    <option value="4">[4]幻灵红包</option>
                                 </select>
                             </div>
                             <div class="form-item">
                                 <label>渠道</label>
                                 <select id="mgmt-filter-channel">
                                     <option value="">全部</option>
-                                    <option value="App Store">App Store</option>
-                                    <option value="TestFlight">TestFlight</option>
-                                    <option value="企业签">企业签</option>
+                                    <option value="1001">[1001]App Store</option>
+                                    <option value="1002">[1002]TestFlight</option>
+                                    <option value="1003">[1003]企业签</option>
                                 </select>
                             </div>
                             <div class="form-item">
@@ -890,8 +891,8 @@
                             </thead>
                             <tbody id="mgmt-table-body">
                                 <tr>
-                                    <td>游戏A</td>
-                                    <td>App Store</td>
+                                    <td>[1]青木</td>
+                                    <td>[1001]App Store</td>
                                     <td>https://pay.example.com/ios/service1</td>
                                     <td>主体A</td>
                                     <td>张三</td>
@@ -901,8 +902,8 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>游戏B</td>
-                                    <td>TestFlight</td>
+                                    <td>[2]代号f</td>
+                                    <td>[1002]TestFlight</td>
                                     <td>https://pay.example.com/ios/service2</td>
                                     <td>主体B</td>
                                     <td>李四</td>
@@ -912,8 +913,8 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>游戏C</td>
-                                    <td>企业签</td>
+                                    <td>[3]幻灵鬼服</td>
+                                    <td>[1003]企业签</td>
                                     <td>-</td>
                                     <td>-</td>
                                     <td>-</td>
@@ -1048,6 +1049,21 @@
     </div>
 
     <script>
+        // 游戏枚举
+        const gameEnum = {
+            '1': '[1]青木',
+            '2': '[2]代号f',
+            '3': '[3]幻灵鬼服',
+            '4': '[4]幻灵红包'
+        };
+
+        // 渠道枚举
+        const channelEnum = {
+            '1001': '[1001]App Store',
+            '1002': '[1002]TestFlight',
+            '1003': '[1003]企业签'
+        };
+
         // 模拟数据存储
         const mockData = {
             iosLinks: [
@@ -1058,9 +1074,9 @@
                 { id: 1, url: 'https://agreement.example.com/terms', subject: '主体A', status: 'enabled', editor: '王五', time: '2026-04-18 09:00:00' }
             ],
             mgmtConfigs: [
-                { id: 1, game: '游戏A', channel: 'App Store', link: 'https://pay.example.com/ios/service1', subject: '主体A', editor: '张三', time: '2026-04-18 10:30:00' },
-                { id: 2, game: '游戏B', channel: 'TestFlight', link: 'https://pay.example.com/ios/service2', subject: '主体B', editor: '李四', time: '2026-04-17 16:45:00' },
-                { id: 3, game: '游戏C', channel: '企业签', link: '', subject: '', editor: '', time: '' }
+                { id: 1, gameId: '1', channelId: '1001', link: 'https://pay.example.com/ios/service1', subject: '主体A', editor: '张三', time: '2026-04-18 10:30:00' },
+                { id: 2, gameId: '2', channelId: '1002', link: 'https://pay.example.com/ios/service2', subject: '主体B', editor: '李四', time: '2026-04-17 16:45:00' },
+                { id: 3, gameId: '3', channelId: '1003', link: '', subject: '', editor: '', time: '' }
             ],
             // 主体对应的链接选项
             subjectLinks: {
@@ -1249,13 +1265,13 @@
             if (!config) return;
 
             currentEditId = id;
-            document.getElementById('edit-game').value = config.game;
-            document.getElementById('edit-channel').value = config.channel;
+            document.getElementById('edit-game').value = gameEnum[config.gameId] || config.gameId;
+            document.getElementById('edit-channel').value = channelEnum[config.channelId] || config.channelId;
             document.getElementById('edit-subject').value = config.subject || '';
-            
+
             // 更新链接选项
             updateLinkOptions(config.link);
-            
+
             document.getElementById('modal-edit-mgmt').classList.add('active');
         }
 
@@ -1307,8 +1323,8 @@
             const tbody = document.getElementById('mgmt-table-body');
             tbody.innerHTML = mockData.mgmtConfigs.map(item => `
                 <tr>
-                    <td>${item.game}</td>
-                    <td>${item.channel}</td>
+                    <td>${gameEnum[item.gameId] || item.gameId}</td>
+                    <td>${channelEnum[item.channelId] || item.channelId}</td>
                     <td>${item.link || '-'}</td>
                     <td>${item.subject || '-'}</td>
                     <td>${item.editor || '-'}</td>
