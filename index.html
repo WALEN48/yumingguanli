@@ -758,6 +758,7 @@
                                     <tr>
                                         <th>链接地址</th>
                                         <th>主体</th>
+                                        <th>备注</th>
                                         <th>展示状态</th>
                                         <th>最后编辑人</th>
                                         <th>最后编辑时间</th>
@@ -767,6 +768,7 @@
                                     <tr>
                                         <td>https://pay.example.com/ios/service1</td>
                                         <td>广州信跃网络技术有限公司</td>
+                                        <td>iOS支付主链接</td>
                                         <td>
                                             <label class="switch">
                                                 <input type="checkbox" checked onchange="toggleStatus('ios', 1, this)">
@@ -779,6 +781,7 @@
                                     <tr>
                                         <td>https://pay.example.com/ios/service2</td>
                                         <td>郑州博安网络科技有限公司</td>
+                                        <td>备用支付链接</td>
                                         <td>
                                             <label class="switch">
                                                 <input type="checkbox" onchange="toggleStatus('ios', 2, this)">
@@ -840,6 +843,7 @@
                                     <tr>
                                         <th>链接地址</th>
                                         <th>主体</th>
+                                        <th>备注</th>
                                         <th>展示状态</th>
                                         <th>最后编辑人</th>
                                         <th>最后编辑时间</th>
@@ -849,6 +853,7 @@
                                     <tr>
                                         <td>https://agreement.example.com/terms</td>
                                         <td>广州信跃网络技术有限公司</td>
+                                        <td>用户协议条款</td>
                                         <td>
                                             <label class="switch">
                                                 <input type="checkbox" checked onchange="toggleStatus('agreement', 1, this)">
@@ -1002,6 +1007,10 @@
                     </select>
                 </div>
                 <div class="form-row">
+                    <label>备注</label>
+                    <input type="text" id="ios-add-remark" placeholder="请输入备注">
+                </div>
+                <div class="form-row">
                     <label>展示状态</label>
                     <select id="ios-add-status">
                         <option value="enabled" selected>启用</option>
@@ -1036,6 +1045,10 @@
                         <option value="2">郑州博安网络科技有限公司</option>
                         <option value="3">广州天纵网络科技有限公司</option>
                     </select>
+                </div>
+                <div class="form-row">
+                    <label>备注</label>
+                    <input type="text" id="agreement-add-remark" placeholder="请输入备注">
                 </div>
                 <div class="form-row">
                     <label>展示状态</label>
@@ -1110,11 +1123,11 @@
         // 模拟数据存储
         const mockData = {
             iosLinks: [
-                { id: 1, url: 'https://pay.example.com/ios/service1', subjectId: '1', status: 'enabled', editor: '张三', time: '2026-04-18 10:30:00' },
-                { id: 2, url: 'https://pay.example.com/ios/service2', subjectId: '2', status: 'disabled', editor: '李四', time: '2026-04-17 16:45:00' }
+                { id: 1, url: 'https://pay.example.com/ios/service1', subjectId: '1', remark: 'iOS支付主链接', status: 'enabled', editor: '张三', time: '2026-04-18 10:30:00' },
+                { id: 2, url: 'https://pay.example.com/ios/service2', subjectId: '2', remark: '备用支付链接', status: 'disabled', editor: '李四', time: '2026-04-17 16:45:00' }
             ],
             agreementLinks: [
-                { id: 1, url: 'https://agreement.example.com/terms', subjectId: '1', status: 'enabled', editor: '王五', time: '2026-04-18 09:00:00' }
+                { id: 1, url: 'https://agreement.example.com/terms', subjectId: '1', remark: '用户协议条款', status: 'enabled', editor: '王五', time: '2026-04-18 09:00:00' }
             ],
             mgmtConfigs: [
                 { id: 1, gameId: '1', channelId: '1001', link: 'https://pay.example.com/ios/service1', subjectId: '1', editor: '张三', time: '2026-04-18 10:30:00' },
@@ -1214,10 +1227,12 @@
             if (type === 'ios-add') {
                 document.getElementById('ios-add-url').value = '';
                 document.getElementById('ios-add-subject').value = '';
+                document.getElementById('ios-add-remark').value = '';
                 document.getElementById('ios-add-status').value = 'enabled';
             } else if (type === 'agreement-add') {
                 document.getElementById('agreement-add-url').value = '';
                 document.getElementById('agreement-add-subject').value = '';
+                document.getElementById('agreement-add-remark').value = '';
                 document.getElementById('agreement-add-status').value = 'enabled';
             }
         }
@@ -1227,6 +1242,7 @@
             if (type === 'ios') {
                 const url = document.getElementById('ios-add-url').value;
                 const subjectId = document.getElementById('ios-add-subject').value;
+                const remark = document.getElementById('ios-add-remark').value;
                 const status = document.getElementById('ios-add-status').value;
 
                 if (!url || !subjectId) {
@@ -1238,6 +1254,7 @@
                     id: Date.now(),
                     url,
                     subjectId,
+                    remark,
                     status,
                     editor: '当前用户',
                     time: new Date().toLocaleString('zh-CN')
@@ -1247,6 +1264,7 @@
             } else if (type === 'agreement') {
                 const url = document.getElementById('agreement-add-url').value;
                 const subjectId = document.getElementById('agreement-add-subject').value;
+                const remark = document.getElementById('agreement-add-remark').value;
                 const status = document.getElementById('agreement-add-status').value;
 
                 if (!url || !subjectId) {
@@ -1258,6 +1276,7 @@
                     id: Date.now(),
                     url,
                     subjectId,
+                    remark,
                     status,
                     editor: '当前用户',
                     time: new Date().toLocaleString('zh-CN')
@@ -1312,6 +1331,7 @@
                 <tr>
                     <td>${item.url}</td>
                     <td>${subjectEnum[item.subjectId] || item.subjectId}</td>
+                    <td>${item.remark || '-'}</td>
                     <td>
                         <label class="switch">
                             <input type="checkbox" ${item.status === 'enabled' ? 'checked' : ''} onchange="toggleStatus('ios', ${item.id}, this)">
@@ -1331,6 +1351,7 @@
                 <tr>
                     <td>${item.url}</td>
                     <td>${subjectEnum[item.subjectId] || item.subjectId}</td>
+                    <td>${item.remark || '-'}</td>
                     <td>
                         <label class="switch">
                             <input type="checkbox" ${item.status === 'enabled' ? 'checked' : ''} onchange="toggleStatus('agreement', ${item.id}, this)">
