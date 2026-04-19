@@ -84,6 +84,11 @@
         .menu-arrow {
             margin-left: auto;
             font-size: 12px;
+            transition: transform 0.3s;
+        }
+
+        .menu-arrow.expanded {
+            transform: rotate(90deg);
         }
 
         .submenu {
@@ -91,15 +96,44 @@
         }
 
         .submenu-item {
-            padding: 10px 24px 10px 50px;
+            padding: 10px 24px 10px 40px;
             cursor: pointer;
             color: rgba(255,255,255,0.65);
             font-size: 14px;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .submenu-item:hover, .submenu-item.active {
             color: #fff;
+        }
+
+        .submenu-arrow {
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        .submenu-arrow.expanded {
+            transform: rotate(90deg);
+        }
+
+        .submenu-level2 {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .submenu-item2 {
+            padding: 8px 24px 8px 60px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.65);
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .submenu-item2:hover, .submenu-item2.active {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
         }
 
         /* 主内容区 */
@@ -624,11 +658,22 @@
                 <span>发行运营后台</span>
             </div>
             <nav class="menu">
-                <div class="menu-item active" id="menu-domain-mgmt" onclick="showPage('domain-mgmt', this)">
-                    <span>平台域名链接管理</span>
+                <!-- 一级菜单：系统设置 -->
+                <div class="menu-item" onclick="toggleMenu('system-setting')">
+                    <span>系统设置</span>
+                    <span class="menu-arrow" id="arrow-system-setting">▶</span>
                 </div>
-                <div class="menu-item" id="menu-payment-link-mgmt" onclick="showPage('payment-link-mgmt', this)">
-                    <span>微小iOS客服支付链接管理</span>
+                <div class="submenu hidden" id="submenu-system-setting">
+                    <!-- 二级菜单：支付与登录 -->
+                    <div class="submenu-item" onclick="toggleSubMenu('payment-login')">
+                        <span>支付与登录</span>
+                        <span class="submenu-arrow" id="arrow-payment-login">▶</span>
+                    </div>
+                    <div class="submenu-level2 hidden" id="submenu-payment-login">
+                        <!-- 三级菜单 -->
+                        <div class="submenu-item2 active" id="menu-domain-mgmt" onclick="showPage('domain-mgmt', this)">平台域名链接管理</div>
+                        <div class="submenu-item2" id="menu-payment-link-mgmt" onclick="showPage('payment-link-mgmt', this)">微小iOS客服支付链接管理</div>
+                    </div>
                 </div>
             </nav>
         </aside>
@@ -1093,6 +1138,32 @@
 
         let currentEditId = null;
 
+        // 菜单展开/收起
+        function toggleMenu(menuId) {
+            const submenu = document.getElementById(`submenu-${menuId}`);
+            const arrow = document.getElementById(`arrow-${menuId}`);
+            if (submenu.classList.contains('hidden')) {
+                submenu.classList.remove('hidden');
+                arrow.classList.add('expanded');
+            } else {
+                submenu.classList.add('hidden');
+                arrow.classList.remove('expanded');
+            }
+        }
+
+        // 子菜单展开/收起
+        function toggleSubMenu(subMenuId) {
+            const submenu = document.getElementById(`submenu-${subMenuId}`);
+            const arrow = document.getElementById(`arrow-${subMenuId}`);
+            if (submenu.classList.contains('hidden')) {
+                submenu.classList.remove('hidden');
+                arrow.classList.add('expanded');
+            } else {
+                submenu.classList.add('hidden');
+                arrow.classList.remove('expanded');
+            }
+        }
+
         // 页面切换
         function showPage(pageName, element) {
             // 隐藏所有页面
@@ -1100,8 +1171,8 @@
             // 显示目标页面
             document.getElementById(`page-${pageName}`).classList.remove('hidden');
 
-            // 更新菜单激活状态
-            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            // 更新三级菜单激活状态
+            document.querySelectorAll('.submenu-item2').forEach(item => item.classList.remove('active'));
             if (element) {
                 element.classList.add('active');
             } else {
