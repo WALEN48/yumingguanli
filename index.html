@@ -1104,6 +1104,26 @@
         </div>
     </div>
 
+    <!-- 编辑备注模态框 -->
+    <div class="modal-overlay" id="modal-edit-remark">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">编辑备注</h3>
+                <button class="modal-close" onclick="closeModal('edit-remark')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <label>备注</label>
+                    <input type="text" id="edit-remark-input" placeholder="请输入备注">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('edit-remark')">取消</button>
+                <button class="btn btn-primary" onclick="saveRemark()">保存</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // 游戏枚举
         const gameEnum = {
@@ -1234,6 +1254,10 @@
                 document.getElementById('agreement-add-subject').value = '';
                 document.getElementById('agreement-add-remark').value = '';
                 document.getElementById('agreement-add-status').value = 'enabled';
+            } else if (type === 'edit-remark') {
+                document.getElementById('edit-remark-input').value = '';
+                currentRemarkType = null;
+                currentRemarkId = null;
             }
         }
 
@@ -1324,6 +1348,36 @@
             }
         }
 
+        // 当前编辑的备注类型和ID
+        let currentRemarkType = null;
+        let currentRemarkId = null;
+
+        // 打开备注编辑弹窗
+        function openRemarkModal(type, id, currentRemark) {
+            currentRemarkType = type;
+            currentRemarkId = id;
+            document.getElementById('edit-remark-input').value = currentRemark || '';
+            document.getElementById('modal-edit-remark').classList.add('active');
+        }
+
+        // 保存备注
+        function saveRemark() {
+            const remark = document.getElementById('edit-remark-input').value;
+            const dataList = currentRemarkType === 'ios' ? mockData.iosLinks : mockData.agreementLinks;
+            const item = dataList.find(i => i.id === currentRemarkId);
+            if (item) {
+                item.remark = remark;
+                item.editor = '当前用户';
+                item.time = new Date().toLocaleString('zh-CN');
+                if (currentRemarkType === 'ios') {
+                    renderIosTable();
+                } else {
+                    renderAgreementTable();
+                }
+            }
+            closeModal('edit-remark');
+        }
+
         // 渲染iOS表格
         function renderIosTable() {
             const tbody = document.getElementById('ios-table-body');
@@ -1331,7 +1385,7 @@
                 <tr>
                     <td>${item.url}</td>
                     <td>${subjectEnum[item.subjectId] || item.subjectId}</td>
-                    <td>${item.remark || '-'}</td>
+                    <td class="remark-cell" onclick="openRemarkModal('ios', ${item.id}, '${item.remark || ''}')" style="cursor:pointer;color:#1890ff;">${item.remark || '-'}</td>
                     <td>
                         <label class="switch">
                             <input type="checkbox" ${item.status === 'enabled' ? 'checked' : ''} onchange="toggleStatus('ios', ${item.id}, this)">
@@ -1351,7 +1405,7 @@
                 <tr>
                     <td>${item.url}</td>
                     <td>${subjectEnum[item.subjectId] || item.subjectId}</td>
-                    <td>${item.remark || '-'}</td>
+                    <td class="remark-cell" onclick="openRemarkModal('agreement', ${item.id}, '${item.remark || ''}')" style="cursor:pointer;color:#1890ff;">${item.remark || '-'}</td>
                     <td>
                         <label class="switch">
                             <input type="checkbox" ${item.status === 'enabled' ? 'checked' : ''} onchange="toggleStatus('agreement', ${item.id}, this)">
