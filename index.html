@@ -624,11 +624,11 @@
                 <span>发行运营后台</span>
             </div>
             <nav class="menu">
-                <div class="menu-item active" onclick="showPage('domain-mgmt')">
+                <div class="menu-item active" id="menu-domain-mgmt" onclick="showPage('domain-mgmt', this)">
                     <span class="menu-icon">🔗</span>
                     <span>平台域名链接管理</span>
                 </div>
-                <div class="menu-item" onclick="showPage('payment-link-mgmt')">
+                <div class="menu-item" id="menu-payment-link-mgmt" onclick="showPage('payment-link-mgmt', this)">
                     <span class="menu-icon">💳</span>
                     <span>微小iOS客服支付链接管理</span>
                 </div>
@@ -671,8 +671,8 @@
 
                     <!-- 子页签 -->
                     <div class="sub-tabs">
-                        <div class="sub-tab active" onclick="switchSubTab('ios-payment')">微小iOS客服支付链接</div>
-                        <div class="sub-tab" onclick="switchSubTab('agreement')">协议链接</div>
+                        <div class="sub-tab active" id="tab-ios-payment" onclick="switchSubTab('ios-payment', this)">微小iOS客服支付链接</div>
+                        <div class="sub-tab" id="tab-agreement" onclick="switchSubTab('agreement', this)">协议链接</div>
                     </div>
 
                     <!-- 微小iOS客服支付链接 -->
@@ -1125,7 +1125,7 @@
         let currentEditId = null;
 
         // 页面切换
-        function showPage(pageName) {
+        function showPage(pageName, element) {
             // 隐藏所有页面
             document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
             // 显示目标页面
@@ -1133,7 +1133,11 @@
 
             // 更新菜单激活状态
             document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            if (element) {
+                element.classList.add('active');
+            } else {
+                document.getElementById(`menu-${pageName}`).classList.add('active');
+            }
 
             // 更新顶部标签
             if (pageName === 'payment-link-mgmt') {
@@ -1144,10 +1148,14 @@
         }
 
         // 子页签切换
-        function switchSubTab(tabName) {
+        function switchSubTab(tabName, element) {
             // 更新标签样式
             document.querySelectorAll('.sub-tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
+            if (element) {
+                element.classList.add('active');
+            } else {
+                document.getElementById(`tab-${tabName}`).classList.add('active');
+            }
 
             // 切换内容
             document.querySelectorAll('.subtab-content').forEach(content => content.classList.add('hidden'));
