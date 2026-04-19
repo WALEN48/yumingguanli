@@ -1381,11 +1381,14 @@
         // 渲染iOS表格
         function renderIosTable() {
             const tbody = document.getElementById('ios-table-body');
-            tbody.innerHTML = mockData.iosLinks.map(item => `
+            tbody.innerHTML = mockData.iosLinks.map(item => {
+                const remarkText = item.remark || '-';
+                const remarkValue = (item.remark || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                return `
                 <tr>
                     <td>${item.url}</td>
                     <td>${subjectEnum[item.subjectId] || item.subjectId}</td>
-                    <td class="remark-cell" onclick="openRemarkModal('ios', ${item.id}, '${item.remark || ''}')" style="cursor:pointer;color:#1890ff;">${item.remark || '-'}</td>
+                    <td class="remark-cell" onclick="openRemarkModal('ios', ${item.id}, '${remarkValue}')" style="cursor:pointer;color:#1890ff;text-decoration:underline;">${remarkText}</td>
                     <td>
                         <label class="switch">
                             <input type="checkbox" ${item.status === 'enabled' ? 'checked' : ''} onchange="toggleStatus('ios', ${item.id}, this)">
@@ -1395,17 +1398,20 @@
                     <td>${item.editor}</td>
                     <td>${item.time}</td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
 
         // 渲染协议表格
         function renderAgreementTable() {
             const tbody = document.getElementById('agreement-table-body');
-            tbody.innerHTML = mockData.agreementLinks.map(item => `
+            tbody.innerHTML = mockData.agreementLinks.map(item => {
+                const remarkText = item.remark || '-';
+                const remarkValue = (item.remark || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                return `
                 <tr>
                     <td>${item.url}</td>
                     <td>${subjectEnum[item.subjectId] || item.subjectId}</td>
-                    <td class="remark-cell" onclick="openRemarkModal('agreement', ${item.id}, '${item.remark || ''}')" style="cursor:pointer;color:#1890ff;">${item.remark || '-'}</td>
+                    <td class="remark-cell" onclick="openRemarkModal('agreement', ${item.id}, '${remarkValue}')" style="cursor:pointer;color:#1890ff;text-decoration:underline;">${remarkText}</td>
                     <td>
                         <label class="switch">
                             <input type="checkbox" ${item.status === 'enabled' ? 'checked' : ''} onchange="toggleStatus('agreement', ${item.id}, this)">
@@ -1415,7 +1421,7 @@
                     <td>${item.editor}</td>
                     <td>${item.time}</td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
 
         // 打开编辑模态框
