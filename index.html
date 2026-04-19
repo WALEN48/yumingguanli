@@ -661,15 +661,15 @@
                 <!-- 一级菜单：系统设置 -->
                 <div class="menu-item" onclick="toggleMenu('system-setting')">
                     <span>系统设置</span>
-                    <span class="menu-arrow" id="arrow-system-setting">▶</span>
+                    <span class="menu-arrow expanded" id="arrow-system-setting">▶</span>
                 </div>
-                <div class="submenu hidden" id="submenu-system-setting">
+                <div class="submenu" id="submenu-system-setting">
                     <!-- 二级菜单：支付与登录 -->
                     <div class="submenu-item" onclick="toggleSubMenu('payment-login')">
                         <span>支付与登录</span>
-                        <span class="submenu-arrow" id="arrow-payment-login">▶</span>
+                        <span class="submenu-arrow expanded" id="arrow-payment-login">▶</span>
                     </div>
-                    <div class="submenu-level2 hidden" id="submenu-payment-login">
+                    <div class="submenu-level2" id="submenu-payment-login">
                         <!-- 三级菜单 -->
                         <div class="submenu-item2 active" id="menu-domain-mgmt" onclick="showPage('domain-mgmt', this)">平台域名链接管理</div>
                         <div class="submenu-item2" id="menu-payment-link-mgmt" onclick="showPage('payment-link-mgmt', this)">微小iOS客服支付链接管理</div>
