@@ -1081,16 +1081,16 @@
         // 模拟数据存储
         const mockData = {
             iosLinks: [
-                { id: 1, url: 'https://pay.example.com/ios/service1', subject: '主体A', status: 'enabled', editor: '张三', time: '2026-04-18 10:30:00' },
-                { id: 2, url: 'https://pay.example.com/ios/service2', subject: '主体B', status: 'disabled', editor: '李四', time: '2026-04-17 16:45:00' }
+                { id: 1, url: 'https://pay.example.com/ios/service1', subjectId: '1', status: 'enabled', editor: '张三', time: '2026-04-18 10:30:00' },
+                { id: 2, url: 'https://pay.example.com/ios/service2', subjectId: '2', status: 'disabled', editor: '李四', time: '2026-04-17 16:45:00' }
             ],
             agreementLinks: [
-                { id: 1, url: 'https://agreement.example.com/terms', subject: '主体A', status: 'enabled', editor: '王五', time: '2026-04-18 09:00:00' }
+                { id: 1, url: 'https://agreement.example.com/terms', subjectId: '1', status: 'enabled', editor: '王五', time: '2026-04-18 09:00:00' }
             ],
             mgmtConfigs: [
-                { id: 1, gameId: '1', channelId: '1001', link: 'https://pay.example.com/ios/service1', subject: '主体A', editor: '张三', time: '2026-04-18 10:30:00' },
-                { id: 2, gameId: '2', channelId: '1002', link: 'https://pay.example.com/ios/service2', subject: '主体B', editor: '李四', time: '2026-04-17 16:45:00' },
-                { id: 3, gameId: '3', channelId: '1003', link: '', subject: '', editor: '', time: '' }
+                { id: 1, gameId: '1', channelId: '1001', link: 'https://pay.example.com/ios/service1', subjectId: '1', editor: '张三', time: '2026-04-18 10:30:00' },
+                { id: 2, gameId: '2', channelId: '1002', link: 'https://pay.example.com/ios/service2', subjectId: '2', editor: '李四', time: '2026-04-17 16:45:00' },
+                { id: 3, gameId: '3', channelId: '1003', link: '', subjectId: '', editor: '', time: '' }
             ],
             // 主体对应的链接选项
             subjectLinks: {
@@ -1186,10 +1186,10 @@
         function saveItem(type) {
             if (type === 'ios') {
                 const url = document.getElementById('ios-add-url').value;
-                const subject = document.getElementById('ios-add-subject').value;
+                const subjectId = document.getElementById('ios-add-subject').value;
                 const status = document.getElementById('ios-add-status').value;
-                
-                if (!url || !subject) {
+
+                if (!url || !subjectId) {
                     alert('请填写必填项');
                     return;
                 }
@@ -1197,7 +1197,7 @@
                 const newItem = {
                     id: Date.now(),
                     url,
-                    subject,
+                    subjectId,
                     status,
                     editor: '当前用户',
                     time: new Date().toLocaleString('zh-CN')
@@ -1206,10 +1206,10 @@
                 renderIosTable();
             } else if (type === 'agreement') {
                 const url = document.getElementById('agreement-add-url').value;
-                const subject = document.getElementById('agreement-add-subject').value;
+                const subjectId = document.getElementById('agreement-add-subject').value;
                 const status = document.getElementById('agreement-add-status').value;
-                
-                if (!url || !subject) {
+
+                if (!url || !subjectId) {
                     alert('请填写必填项');
                     return;
                 }
@@ -1217,7 +1217,7 @@
                 const newItem = {
                     id: Date.now(),
                     url,
-                    subject,
+                    subjectId,
                     status,
                     editor: '当前用户',
                     time: new Date().toLocaleString('zh-CN')
@@ -1271,7 +1271,7 @@
             tbody.innerHTML = mockData.iosLinks.map(item => `
                 <tr>
                     <td>${item.url}</td>
-                    <td>${item.subject}</td>
+                    <td>${subjectEnum[item.subjectId] || item.subjectId}</td>
                     <td>
                         <label class="switch">
                             <input type="checkbox" ${item.status === 'enabled' ? 'checked' : ''} onchange="toggleStatus('ios', ${item.id}, this)">
@@ -1290,7 +1290,7 @@
             tbody.innerHTML = mockData.agreementLinks.map(item => `
                 <tr>
                     <td>${item.url}</td>
-                    <td>${item.subject}</td>
+                    <td>${subjectEnum[item.subjectId] || item.subjectId}</td>
                     <td>
                         <label class="switch">
                             <input type="checkbox" ${item.status === 'enabled' ? 'checked' : ''} onchange="toggleStatus('agreement', ${item.id}, this)">
@@ -1311,7 +1311,7 @@
             currentEditId = id;
             document.getElementById('edit-game').value = gameEnum[config.gameId] || config.gameId;
             document.getElementById('edit-channel').value = channelEnum[config.channelId] || config.channelId;
-            document.getElementById('edit-subject').value = config.subject || '';
+            document.getElementById('edit-subject').value = config.subjectId || '';
 
             // 更新链接选项
             updateLinkOptions(config.link);
@@ -1321,13 +1321,13 @@
 
         // 更新链接选项（根据主体）
         function updateLinkOptions(selectedLink = '') {
-            const subject = document.getElementById('edit-subject').value;
+            const subjectId = document.getElementById('edit-subject').value;
             const linkSelect = document.getElementById('edit-link');
-            
+
             linkSelect.innerHTML = '<option value="">请选择链接</option>';
-            
-            if (subject && mockData.subjectLinks[subject]) {
-                mockData.subjectLinks[subject].forEach(link => {
+
+            if (subjectId && mockData.subjectLinks[subjectId]) {
+                mockData.subjectLinks[subjectId].forEach(link => {
                     const option = document.createElement('option');
                     option.value = link;
                     option.textContent = link;
@@ -1341,17 +1341,17 @@
 
         // 保存管理编辑
         function saveMgmtEdit() {
-            const subject = document.getElementById('edit-subject').value;
+            const subjectId = document.getElementById('edit-subject').value;
             const link = document.getElementById('edit-link').value;
-            
-            if (!subject || !link) {
+
+            if (!subjectId || !link) {
                 alert('请填写必填项');
                 return;
             }
 
             const config = mockData.mgmtConfigs.find(c => c.id === currentEditId);
             if (config) {
-                config.subject = subject;
+                config.subjectId = subjectId;
                 config.link = link;
                 config.editor = '当前用户';
                 config.time = new Date().toLocaleString('zh-CN');
@@ -1370,7 +1370,7 @@
                     <td>${gameEnum[item.gameId] || item.gameId}</td>
                     <td>${channelEnum[item.channelId] || item.channelId}</td>
                     <td>${item.link || '-'}</td>
-                    <td>${item.subject || '-'}</td>
+                    <td>${subjectEnum[item.subjectId] || item.subjectId || '-'}</td>
                     <td>${item.editor || '-'}</td>
                     <td>${item.time || '-'}</td>
                     <td class="actions">
