@@ -158,13 +158,24 @@ const IosPaymentLink = () => {
       width: 150,
       ellipsis: true,
       render: (text, record) => (
-        <Button 
-          type="link" 
-          style={{ padding: 0, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}
-          onClick={() => handleRemarkClick(record)}
+        <span 
+          style={{ 
+            color: text ? '#1890ff' : '#999', 
+            cursor: 'pointer',
+            display: 'inline-block',
+            maxWidth: '100%',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}
+          onClick={(e) => {
+            e.stopPropagation()
+            handleRemarkClick(record)
+          }}
+          title={text || '鐐瑰嚮娣诲姞澶囨敞'}
         >
-          {text || <span style={{ color: '#999' }}>鐐瑰嚮娣诲姞澶囨敞</span>}
-        </Button>
+          {text || '鐐瑰嚮娣诲姞澶囨敞'}
+        </span>
       )
     },
     {
