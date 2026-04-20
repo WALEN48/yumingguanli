@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Card, Form, Select, Button, Table, Tag, Space, message, Modal, Input } from 'antd'
 import { PlusOutlined, SearchOutlined, ReloadOutlined, EditOutlined } from '@ant-design/icons'
 import LinkFormModal from '../../components/Common/LinkFormModal'
@@ -134,7 +134,8 @@ const IosPaymentLink = () => {
     }
   }
 
-  // 琛ㄦ牸鍒楀畾涔?  const columns = [
+  // 琛ㄦ牸鍒楀畾涔?- 浣跨敤useMemo纭繚寮曠敤绋冲畾
+  const columns = useMemo(() => [
     {
       title: '閾炬帴鍦板潃',
       dataIndex: 'url',
@@ -198,7 +199,7 @@ const IosPaymentLink = () => {
         </Space>
       )
     }
-  ]
+  ], [handleEdit, handleRemarkClick])
 
   return (
     <div>
