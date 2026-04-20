@@ -202,8 +202,6 @@ const IosPaymentLink = () => {
 
   return (
     <div>
-      <h2 style={{ marginBottom: '24px' }}>寰皬 iOS 瀹㈡湇鏀粯閾炬帴</h2>
-      
       {/* 绛涢€夊尯 */}
       <Card style={{ marginBottom: '24px' }}>
         <Form
