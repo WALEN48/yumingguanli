@@ -1,3 +1,4 @@
+// Version: 2026-04-20-v4 - 娓告垙/SDK鍗忚閾炬帴
 import { Tabs } from 'antd'
 import { useNavigate, useLocation } from 'react-router-dom'
 import IosPaymentLink from './IosPaymentLink'
