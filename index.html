@@ -1460,6 +1460,7 @@
             currentEditId = id;
             document.getElementById('edit-game').value = gameEnum[config.gameId] || config.gameId;
             document.getElementById('edit-channel').value = channelEnum[config.channelId] || config.channelId;
+            document.getElementById('edit-entity-display').value = subjectEnum[config.subjectId] || config.subjectId || '-';
             document.getElementById('edit-subject').value = config.subjectId || '';
 
             // 更新链接选项
