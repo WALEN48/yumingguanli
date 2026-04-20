@@ -134,32 +134,6 @@ const IosPaymentLink = () => {
     }
   }
 
-  // 澶囨敞鍒楁覆鏌撶粍浠?  const RemarkCell = ({ text, record, onClick }) => {
-    const clickHandler = (e) => {
-      console.log('RemarkCell clicked:', record)
-      e.preventDefault()
-      e.stopPropagation()
-      onClick(record)
-    }
-    
-    return (
-      <div 
-        onClick={clickHandler}
-        style={{
-          color: text ? '#1890ff' : '#999',
-          cursor: 'pointer',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          userSelect: 'none'
-        }}
-        title={text || '鐐瑰嚮娣诲姞澶囨敞'}
-      >
-        {text || '鐐瑰嚮娣诲姞澶囨敞'}
-      </div>
-    )
-  }
-
   // 琛ㄦ牸鍒楀畾涔?  const columns = [
     {
       title: '閾炬帴鍦板潃',
@@ -182,13 +156,8 @@ const IosPaymentLink = () => {
       dataIndex: 'remark',
       key: 'remark',
       width: 150,
-      render: (text, record) => (
-        <RemarkCell 
-          text={text} 
-          record={record} 
-          onClick={handleRemarkClick}
-        />
-      )
+      ellipsis: true,
+      render: (text) => text || '-'
     },
     {
       title: '灞曠ず鐘舵€?,
@@ -216,12 +185,17 @@ const IosPaymentLink = () => {
     {
       title: '鎿嶄綔',
       key: 'action',
-      width: 100,
+      width: 150,
       fixed: 'right',
       render: (_, record) => (
-        <Button type="link" onClick={() => handleEdit(record)}>
-          缂栬緫
-        </Button>
+        <Space size="small">
+          <Button type="link" onClick={() => handleEdit(record)}>
+            缂栬緫
+          </Button>
+          <Button type="link" onClick={() => handleRemarkClick(record)}>
+            {record.remark ? '淇敼澶囨敞' : '娣诲姞澶囨敞'}
+          </Button>
+        </Space>
       )
     }
   ]
