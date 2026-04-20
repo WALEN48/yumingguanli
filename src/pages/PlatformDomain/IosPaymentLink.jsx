@@ -156,27 +156,39 @@ const IosPaymentLink = () => {
       dataIndex: 'remark',
       key: 'remark',
       width: 150,
-      ellipsis: true,
-      render: (text, record) => (
-        <span 
-          style={{ 
-            color: text ? '#1890ff' : '#999', 
-            cursor: 'pointer',
-            display: 'inline-block',
-            maxWidth: '100%',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
-          }}
-          onClick={(e) => {
+      className: 'remark-cell',
+      render: (text, record) => {
+        const handleClick = (e) => {
+          if (e) {
+            e.preventDefault()
             e.stopPropagation()
-            handleRemarkClick(record)
-          }}
-          title={text || '鐐瑰嚮娣诲姞澶囨敞'}
-        >
-          {text || '鐐瑰嚮娣诲姞澶囨敞'}
-        </span>
-      )
+          }
+          console.log('鐐瑰嚮澶囨敞:', record)
+          handleRemarkClick(record)
+          return false
+        }
+        return (
+          <a 
+            href="#"
+            className="remark-link"
+            style={{ 
+              color: text ? '#1890ff' : '#999',
+              textDecoration: 'none',
+              display: 'block',
+              maxWidth: '100%',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              cursor: 'pointer'
+            }}
+            onClick={handleClick}
+            onMouseDown={(e) => e.stopPropagation()}
+            title={text || '鐐瑰嚮娣诲姞澶囨敞'}
+          >
+            {text || '鐐瑰嚮娣诲姞澶囨敞'}
+          </a>
+        )
+      }
     },
     {
       title: '灞曠ず鐘舵€?,
@@ -289,6 +301,14 @@ const IosPaymentLink = () => {
             }
           }}
           scroll={{ x: 1000 }}
+          onRow={(record) => ({
+            onClick: (e) => {
+              // 闃绘琛岀偣鍑讳簨浠跺奖鍝嶅崟鍏冩牸鍐呯殑鐐瑰嚮
+              if (e.target.closest('.remark-cell')) {
+                e.stopPropagation()
+              }
+            }
+          })}
         />
       </Card>
 
