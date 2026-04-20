@@ -1415,63 +1415,41 @@
         // 渲染iOS表格
         function renderIosTable() {
             const tbody = document.getElementById('ios-table-body');
-            tbody.innerHTML = mockData.iosLinks.map(item => `
-                <tr data-id="${item.id}" data-type="ios">
-                    <td>${item.url}</td>
-                    <td>${subjectEnum[item.subjectId] || item.subjectId}</td>
-                    <td class="remark-cell" data-remark="${(item.remark || '').replace(/"/g, '&quot;')}">${item.remark || '-'}</td>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" ${item.status === 'enabled' ? 'checked' : ''} onchange="toggleStatus('ios', ${item.id}, this)">
-                            <span class="switch-slider"></span>
-                        </label>
-                    </td>
-                    <td>${item.editor}</td>
-                    <td>${item.time}</td>
-                </tr>
-            `).join('');
-
-            // 绑定备注点击事件
-            tbody.querySelectorAll('.remark-cell').forEach(cell => {
-                cell.addEventListener('click', function() {
-                    const row = this.closest('tr');
-                    const id = parseInt(row.dataset.id);
-                    const type = row.dataset.type;
-                    const remark = this.dataset.remark || '';
-                    openRemarkModal(type, id, remark);
-                });
-            });
+            let html = '';
+            for (let i = 0; i < mockData.iosLinks.length; i++) {
+                const item = mockData.iosLinks[i];
+                const remarkDisplay = item.remark || '-';
+                const remarkValue = encodeURIComponent(item.remark || '');
+                html += '<tr>';
+                html += '<td>' + item.url + '</td>';
+                html += '<td>' + (subjectEnum[item.subjectId] || item.subjectId) + '</td>';
+                html += '<td class="remark-cell" onclick="openRemarkModal(\'ios\', ' + item.id + ', decodeURIComponent(\'' + remarkValue + '\'))">' + remarkDisplay + '</td>';
+                html += '<td><label class="switch"><input type="checkbox" ' + (item.status === 'enabled' ? 'checked' : '') + ' onchange="toggleStatus(\'ios\', ' + item.id + ', this)"><span class="switch-slider"></span></label></td>';
+                html += '<td>' + item.editor + '</td>';
+                html += '<td>' + item.time + '</td>';
+                html += '</tr>';
+            }
+            tbody.innerHTML = html;
         }
 
         // 渲染协议表格
         function renderAgreementTable() {
             const tbody = document.getElementById('agreement-table-body');
-            tbody.innerHTML = mockData.agreementLinks.map(item => `
-                <tr data-id="${item.id}" data-type="agreement">
-                    <td>${item.url}</td>
-                    <td>${subjectEnum[item.subjectId] || item.subjectId}</td>
-                    <td class="remark-cell" data-remark="${(item.remark || '').replace(/"/g, '&quot;')}">${item.remark || '-'}</td>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" ${item.status === 'enabled' ? 'checked' : ''} onchange="toggleStatus('agreement', ${item.id}, this)">
-                            <span class="switch-slider"></span>
-                        </label>
-                    </td>
-                    <td>${item.editor}</td>
-                    <td>${item.time}</td>
-                </tr>
-            `).join('');
-
-            // 绑定备注点击事件
-            tbody.querySelectorAll('.remark-cell').forEach(cell => {
-                cell.addEventListener('click', function() {
-                    const row = this.closest('tr');
-                    const id = parseInt(row.dataset.id);
-                    const type = row.dataset.type;
-                    const remark = this.dataset.remark || '';
-                    openRemarkModal(type, id, remark);
-                });
-            });
+            let html = '';
+            for (let i = 0; i < mockData.agreementLinks.length; i++) {
+                const item = mockData.agreementLinks[i];
+                const remarkDisplay = item.remark || '-';
+                const remarkValue = encodeURIComponent(item.remark || '');
+                html += '<tr>';
+                html += '<td>' + item.url + '</td>';
+                html += '<td>' + (subjectEnum[item.subjectId] || item.subjectId) + '</td>';
+                html += '<td class="remark-cell" onclick="openRemarkModal(\'agreement\', ' + item.id + ', decodeURIComponent(\'' + remarkValue + '\'))">' + remarkDisplay + '</td>';
+                html += '<td><label class="switch"><input type="checkbox" ' + (item.status === 'enabled' ? 'checked' : '') + ' onchange="toggleStatus(\'agreement\', ' + item.id + ', this)"><span class="switch-slider"></span></label></td>';
+                html += '<td>' + item.editor + '</td>';
+                html += '<td>' + item.time + '</td>';
+                html += '</tr>';
+            }
+            tbody.innerHTML = html;
         }
 
         // 打开编辑模态框
