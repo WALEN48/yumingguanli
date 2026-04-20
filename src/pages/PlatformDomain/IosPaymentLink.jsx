@@ -57,6 +57,7 @@ const IosPaymentLink = () => {
 
   // 鍒濆鍔犺浇
   useEffect(() => {
+    console.log('IosPaymentLink component mounted, version: 2026-04-20-v2')
     fetchData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
