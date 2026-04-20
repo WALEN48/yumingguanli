@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, Form, Select, Button, Table, Tag, Space, message, Modal, Input } from 'antd'
 import { PlusOutlined, SearchOutlined, ReloadOutlined, EditOutlined } from '@ant-design/icons'
 import LinkFormModal from '../../components/Common/LinkFormModal'
 import { iosPaymentApi } from '../../services/api'
 
 const { TextArea } = Input
-
 const { Option } = Select
 
 const IosPaymentLink = () => {
@@ -35,7 +34,7 @@ const IosPaymentLink = () => {
   }, [])
 
   // 鑾峰彇鍒楄〃鏁版嵁
-  const fetchData = async (params = {}) => {
+  const fetchData = useCallback(async (params = {}) => {
     setTableLoading(true)
     try {
       const values = form.getFieldsValue()
@@ -46,20 +45,20 @@ const IosPaymentLink = () => {
         ...params
       })
       setData(res.list)
-      setPagination({
-        ...pagination,
+      setPagination(prev => ({
+        ...prev,
         total: res.total,
         ...params
-      })
+      }))
     } finally {
       setTableLoading(false)
     }
-  }
+  }, [form, pagination.current, pagination.pageSize])
 
   // 鍒濆鍔犺浇
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [fetchData])
 
   // 鏌ヨ
   const handleSearch = () => {
@@ -84,14 +83,15 @@ const IosPaymentLink = () => {
     setModalOpen(true)
   }
 
-  // 鎵撳紑澶囨敞缂栬緫寮圭獥
-  const handleRemarkClick = (record) => {
+  // 鎵撳紑澶囨敞缂栬緫寮圭獥 - 浣跨敤useCallback纭繚寮曠敤绋冲畾
+  const handleRemarkClick = useCallback((record) => {
+    console.log('handleRemarkClick called:', record)
     setEditingRecord(record)
     remarkForm.setFieldsValue({
-      remark: record.remark || ''
+      remark: record?.remark || ''
     })
     setRemarkModalOpen(true)
-  }
+  }, [remarkForm])
 
   // 淇濆瓨澶囨敞
   const handleSaveRemark = async () => {
@@ -134,6 +134,32 @@ const IosPaymentLink = () => {
     }
   }
 
+  // 澶囨敞鍒楁覆鏌撶粍浠?  const RemarkCell = ({ text, record, onClick }) => {
+    const clickHandler = (e) => {
+      console.log('RemarkCell clicked:', record)
+      e.preventDefault()
+      e.stopPropagation()
+      onClick(record)
+    }
+    
+    return (
+      <div 
+        onClick={clickHandler}
+        style={{
+          color: text ? '#1890ff' : '#999',
+          cursor: 'pointer',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          userSelect: 'none'
+        }}
+        title={text || '鐐瑰嚮娣诲姞澶囨敞'}
+      >
+        {text || '鐐瑰嚮娣诲姞澶囨敞'}
+      </div>
+    )
+  }
+
   // 琛ㄦ牸鍒楀畾涔?  const columns = [
     {
       title: '閾炬帴鍦板潃',
@@ -156,39 +182,13 @@ const IosPaymentLink = () => {
       dataIndex: 'remark',
       key: 'remark',
       width: 150,
-      className: 'remark-cell',
-      render: (text, record) => {
-        const handleClick = (e) => {
-          if (e) {
-            e.preventDefault()
-            e.stopPropagation()
-          }
-          console.log('鐐瑰嚮澶囨敞:', record)
-          handleRemarkClick(record)
-          return false
-        }
-        return (
-          <a 
-            href="#"
-            className="remark-link"
-            style={{ 
-              color: text ? '#1890ff' : '#999',
-              textDecoration: 'none',
-              display: 'block',
-              maxWidth: '100%',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              cursor: 'pointer'
-            }}
-            onClick={handleClick}
-            onMouseDown={(e) => e.stopPropagation()}
-            title={text || '鐐瑰嚮娣诲姞澶囨敞'}
-          >
-            {text || '鐐瑰嚮娣诲姞澶囨敞'}
-          </a>
-        )
-      }
+      render: (text, record) => (
+        <RemarkCell 
+          text={text} 
+          record={record} 
+          onClick={handleRemarkClick}
+        />
+      )
     },
     {
       title: '灞曠ず鐘舵€?,
@@ -300,15 +300,7 @@ const IosPaymentLink = () => {
               fetchData({ current: page, pageSize })
             }
           }}
-          scroll={{ x: 1000 }}
-          onRow={(record) => ({
-            onClick: (e) => {
-              // 闃绘琛岀偣鍑讳簨浠跺奖鍝嶅崟鍏冩牸鍐呯殑鐐瑰嚮
-              if (e.target.closest('.remark-cell')) {
-                e.stopPropagation()
-              }
-            }
-          })}
+          scroll={{ x: 1100 }}
         />
       </Card>
 
@@ -339,9 +331,7 @@ const IosPaymentLink = () => {
           layout="vertical"
           style={{ marginTop: '16px' }}
         >
-          <Form.Item
-            label="閾炬帴鍦板潃"
-          >
+          <Form.Item label="閾炬帴鍦板潃">
             <span style={{ 
               display: 'inline-block', 
               padding: '4px 11px',
@@ -354,9 +344,7 @@ const IosPaymentLink = () => {
             </span>
           </Form.Item>
 
-          <Form.Item
-            label="涓讳綋"
-          >
+          <Form.Item label="涓讳綋">
             <span style={{ 
               display: 'inline-block', 
               padding: '4px 11px',
