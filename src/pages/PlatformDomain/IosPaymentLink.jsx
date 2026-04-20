@@ -186,18 +186,40 @@ const IosPaymentLink = () => {
     {
       title: '鎿嶄綔',
       key: 'action',
-      width: 150,
-      fixed: 'right',
-      render: (_, record) => (
-        <Space size="small">
-          <Button type="link" onClick={() => handleEdit(record)}>
-            缂栬緫
-          </Button>
-          <Button type="link" onClick={() => handleRemarkClick(record)}>
-            {record.remark ? '淇敼澶囨敞' : '娣诲姞澶囨敞'}
-          </Button>
-        </Space>
-      )
+      width: 180,
+      render: (_, record) => {
+        console.log('Rendering action column for record:', record.id)
+        return (
+          <Space size="small">
+            <Button 
+              type="link" 
+              onClick={(e) => {
+                console.log('缂栬緫鎸夐挳鐐瑰嚮:', record)
+                e.stopPropagation()
+                handleEdit(record)
+              }}
+            >
+              缂栬緫
+            </Button>
+            <Button 
+              type="link" 
+              style={{ color: '#1890ff' }}
+              onMouseDown={(e) => {
+                console.log('澶囨敞鎸夐挳 onMouseDown:', record)
+                e.stopPropagation()
+              }}
+              onClick={(e) => {
+                console.log('澶囨敞鎸夐挳 onClick:', record)
+                e.stopPropagation()
+                e.preventDefault()
+                handleRemarkClick(record)
+              }}
+            >
+              {record.remark ? '淇敼澶囨敞' : '娣诲姞澶囨敞'}
+            </Button>
+          </Space>
+        )
+      }
     }
   ]
 
@@ -273,7 +295,6 @@ const IosPaymentLink = () => {
               fetchData({ current: page, pageSize })
             }
           }}
-          scroll={{ x: 1100 }}
         />
       </Card>
 
