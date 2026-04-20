@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, Form, Select, Button, Table, Tag, Space, message, Modal, Input } from 'antd'
-import { PlusOutlined, SearchOutlined, ReloadOutlined, EditOutlined } from '@ant-design/icons'
+import { PlusOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons'
 import LinkFormModal from '../../components/Common/LinkFormModal'
 import { iosPaymentApi } from '../../services/api'
 
@@ -34,7 +34,7 @@ const IosPaymentLink = () => {
   }, [])
 
   // 鑾峰彇鍒楄〃鏁版嵁
-  const fetchData = useCallback(async (params = {}) => {
+  const fetchData = async (params = {}) => {
     setTableLoading(true)
     try {
       const values = form.getFieldsValue()
@@ -53,12 +53,13 @@ const IosPaymentLink = () => {
     } finally {
       setTableLoading(false)
     }
-  }, [form, pagination.current, pagination.pageSize])
+  }
 
   // 鍒濆鍔犺浇
   useEffect(() => {
     fetchData()
-  }, [fetchData])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // 鏌ヨ
   const handleSearch = () => {
@@ -83,15 +84,15 @@ const IosPaymentLink = () => {
     setModalOpen(true)
   }
 
-  // 鎵撳紑澶囨敞缂栬緫寮圭獥 - 浣跨敤useCallback纭繚寮曠敤绋冲畾
-  const handleRemarkClick = useCallback((record) => {
+  // 鎵撳紑澶囨敞缂栬緫寮圭獥
+  const handleRemarkClick = (record) => {
     console.log('handleRemarkClick called:', record)
     setEditingRecord(record)
     remarkForm.setFieldsValue({
       remark: record?.remark || ''
     })
     setRemarkModalOpen(true)
-  }, [remarkForm])
+  }
 
   // 淇濆瓨澶囨敞
   const handleSaveRemark = async () => {
@@ -134,8 +135,7 @@ const IosPaymentLink = () => {
     }
   }
 
-  // 琛ㄦ牸鍒楀畾涔?- 浣跨敤useMemo纭繚寮曠敤绋冲畾
-  const columns = useMemo(() => [
+  // 琛ㄦ牸鍒楀畾涔?  const columns = [
     {
       title: '閾炬帴鍦板潃',
       dataIndex: 'url',
@@ -199,7 +199,7 @@ const IosPaymentLink = () => {
         </Space>
       )
     }
-  ], [handleEdit, handleRemarkClick])
+  ]
 
   return (
     <div>
