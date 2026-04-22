@@ -1166,6 +1166,34 @@
         </div>
     </div>
 
+    <!-- 编辑协议链接配置弹窗 -->
+    <div id="agreement-edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>编辑协议链接配置</h3>
+                <button class="modal-close" onclick="closeAgreementEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-item">
+                    <label>主体</label>
+                    <input type="text" id="edit-agreement-subject" disabled>
+                </div>
+                <div class="form-item">
+                    <label>链接 <span class="required">*</span></label>
+                    <input type="text" id="edit-agreement-link" placeholder="请输入协议链接">
+                </div>
+                <div class="form-item">
+                    <label>备注</label>
+                    <input type="text" id="edit-agreement-remark" placeholder="请输入备注">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeAgreementEditModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveAgreementEdit()">保存</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // 游戏枚举
         const gameEnum = {
