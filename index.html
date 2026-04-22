@@ -850,14 +850,7 @@
                                         <option value="3">广州天纵网络科技有限公司</option>
                                     </select>
                                 </div>
-                                <div class="form-item">
-                                    <label>展示状态</label>
-                                    <select id="agreement-filter-status">
-                                        <option value="">全部</option>
-                                        <option value="enabled">启用</option>
-                                        <option value="disabled">禁用</option>
-                                    </select>
-                                </div>
+                                
                             </div>
                             <div class="search-buttons">
                                 <button class="btn btn-default" onclick="resetFilter('agreement')">重置</button>
@@ -888,14 +881,9 @@
                                         <td>https://agreement.example.com/terms</td>
                                         <td>广州信跃网络技术有限公司</td>
                                         <td>用户协议条款</td>
-                                        <td>
-                                            <label class="switch">
-                                                <input type="checkbox" checked onchange="toggleStatus('agreement', 1, this)">
-                                                <span class="switch-slider"></span>
-                                            </label>
-                                        </td>
                                         <td>王五</td>
                                         <td>2026-04-18 09:00:00</td>
+                                        <td class="actions"><button class="btn btn-link" onclick="openAgreementEditModal(1)">编辑</button></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1088,13 +1076,7 @@
                     <label>备注</label>
                     <textarea id="agreement-add-remark" placeholder="请输入备注" rows="3"></textarea>
                 </div>
-                <div class="form-row">
-                    <label>展示状态</label>
-                    <select id="agreement-add-status">
-                        <option value="enabled" selected>启用</option>
-                        <option value="disabled">禁用</option>
-                    </select>
-                </div>
+                
             </div>
             <div class="modal-footer">
                 <button class="btn btn-default" onclick="closeModal('agreement-add')">取消</button>
@@ -1167,8 +1149,8 @@
     </div>
 
     <!-- 编辑协议链接配置弹窗 -->
-    <div id="agreement-edit-modal" class="modal">
-        <div class="modal-content">
+    <div id="agreement-edit-modal" class="modal-overlay">
+        <div class="modal">
             <div class="modal-header">
                 <h3>编辑协议链接配置</h3>
                 <button class="modal-close" onclick="closeAgreementEditModal()">&times;</button>
@@ -1359,23 +1341,34 @@
                 const url = document.getElementById('agreement-add-url').value;
                 const subjectId = document.getElementById('agreement-add-subject').value;
                 const remark = document.getElementById('agreement-add-remark').value;
-                const status = document.getElementById('agreement-add-status').value;
 
                 if (!url || !subjectId) {
                     alert('请填写必填项');
                     return;
                 }
 
-                const newItem = {
-                    id: Date.now(),
-                    url,
-                    subjectId,
-                    remark,
-                    status,
-                    editor: '当前用户',
-                    time: new Date().toLocaleString('zh-CN')
-                };
-                mockData.agreementLinks.push(newItem);
+                // 检查是否已存在该主体的链接
+                const existingIndex = mockData.agreementLinks.findIndex(item => item.subjectId === subjectId);
+                if (existingIndex >= 0) {
+                    // 更新现有链接
+                    mockData.agreementLinks[existingIndex].url = url;
+                    mockData.agreementLinks[existingIndex].remark = remark;
+                    mockData.agreementLinks[existingIndex].editor = '当前用户';
+                    mockData.agreementLinks[existingIndex].time = new Date().toLocaleString('zh-CN');
+                    alert('该主体已存在链接，已更新');
+                } else {
+                    // 新增链接
+                    const newItem = {
+                        id: Date.now(),
+                        url,
+                        subjectId,
+                        remark,
+                        status: 'enabled',
+                        editor: '当前用户',
+                        time: new Date().toLocaleString('zh-CN')
+                    };
+                    mockData.agreementLinks.push(newItem);
+                }
                 renderAgreementTable();
             }
             closeModal(`${type}-add`);
@@ -1396,6 +1389,63 @@
                     renderAgreementTable();
                 }
             }
+        }
+
+        // 渲染游戏SDK协议链接表格
+        function renderAgreementTable() {
+            const tbody = document.getElementById('agreement-table-body');
+            let html = '';
+            mockData.agreementLinks.forEach(item => {
+                html += `<tr>
+                    <td><a href="${item.url}" target="_blank">${item.url}</a></td>
+                    <td>${subjectEnum[item.subjectId] || item.subjectId}</td>
+                    <td>${item.remark || '-'}</td>
+                    <td>${item.editor || '-'}</td>
+                    <td>${item.time || '-'}</td>
+                    <td class="actions"><button class="btn btn-link" onclick="openAgreementEditModal(${item.id})">编辑</button></td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // 编辑协议链接配置
+        let currentAgreementEditId = null;
+
+        function openAgreementEditModal(id) {
+            const config = mockData.agreementLinks.find(c => c.id === id);
+            if (!config) return;
+
+            currentAgreementEditId = id;
+            document.getElementById('edit-agreement-subject').value = subjectEnum[config.subjectId] || config.subjectId;
+            document.getElementById('edit-agreement-link').value = config.url || '';
+            document.getElementById('edit-agreement-remark').value = config.remark || '';
+            document.getElementById('agreement-edit-modal').style.display = 'block';
+        }
+
+        function closeAgreementEditModal() {
+            document.getElementById('agreement-edit-modal').style.display = 'none';
+            currentAgreementEditId = null;
+        }
+
+        function saveAgreementEdit() {
+            const link = document.getElementById('edit-agreement-link').value.trim();
+            const remark = document.getElementById('edit-agreement-remark').value.trim();
+
+            if (!link) {
+                alert('请输入链接');
+                return;
+            }
+
+            const config = mockData.agreementLinks.find(c => c.id === currentAgreementEditId);
+            if (config) {
+                config.url = link;
+                config.remark = remark;
+                config.editor = '当前用户';
+                config.time = new Date().toLocaleString('zh-CN');
+            }
+
+            closeAgreementEditModal();
+            renderAgreementTable();
         }
 
         // 筛选功能
