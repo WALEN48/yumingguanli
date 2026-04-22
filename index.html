@@ -1338,9 +1338,9 @@
                 mockData.iosLinks.push(newItem);
                 renderIosTable();
             } else if (type === 'agreement') {
-                const url = document.getElementById('agreement-add-url').value;
+                const url = document.getElementById('agreement-add-url').value.trim();
                 const subjectId = document.getElementById('agreement-add-subject').value;
-                const remark = document.getElementById('agreement-add-remark').value;
+                const remark = document.getElementById('agreement-add-remark').value.trim();
 
                 if (!url || !subjectId) {
                     alert('请填写必填项');
@@ -1352,7 +1352,7 @@
                 if (existingIndex >= 0) {
                     // 更新现有链接
                     mockData.agreementLinks[existingIndex].url = url;
-                    mockData.agreementLinks[existingIndex].remark = remark;
+                    mockData.agreementLinks[existingIndex].remark = remark || '-';
                     mockData.agreementLinks[existingIndex].editor = '当前用户';
                     mockData.agreementLinks[existingIndex].time = new Date().toLocaleString('zh-CN');
                     alert('该主体已存在链接，已更新');
@@ -1360,9 +1360,9 @@
                     // 新增链接
                     const newItem = {
                         id: Date.now(),
-                        url,
-                        subjectId,
-                        remark,
+                        url: url,
+                        subjectId: subjectId,
+                        remark: remark || '-',
                         status: 'enabled',
                         editor: '当前用户',
                         time: new Date().toLocaleString('zh-CN')
@@ -1370,6 +1370,7 @@
                     mockData.agreementLinks.push(newItem);
                 }
                 renderAgreementTable();
+                closeAddModal();
             }
             closeModal(`${type}-add`);
         }
@@ -1394,6 +1395,7 @@
         // 渲染游戏SDK协议链接表格
         function renderAgreementTable() {
             const tbody = document.getElementById('agreement-table-body');
+            if (!tbody) return;
             let html = '';
             mockData.agreementLinks.forEach(item => {
                 html += `<tr>
@@ -1418,13 +1420,16 @@
             currentAgreementEditId = id;
             document.getElementById('edit-agreement-subject').value = subjectEnum[config.subjectId] || config.subjectId;
             document.getElementById('edit-agreement-link').value = config.url || '';
-            document.getElementById('edit-agreement-remark').value = config.remark || '';
-            document.getElementById('agreement-edit-modal').style.display = 'block';
+            document.getElementById('edit-agreement-remark').value = config.remark === '-' ? '' : (config.remark || '');
+            document.getElementById('agreement-edit-modal').style.display = 'flex';
         }
 
         function closeAgreementEditModal() {
             document.getElementById('agreement-edit-modal').style.display = 'none';
             currentAgreementEditId = null;
+            // 清空表单
+            document.getElementById('edit-agreement-link').value = '';
+            document.getElementById('edit-agreement-remark').value = '';
         }
 
         function saveAgreementEdit() {
@@ -1439,7 +1444,7 @@
             const config = mockData.agreementLinks.find(c => c.id === currentAgreementEditId);
             if (config) {
                 config.url = link;
-                config.remark = remark;
+                config.remark = remark || '-';
                 config.editor = '当前用户';
                 config.time = new Date().toLocaleString('zh-CN');
             }
