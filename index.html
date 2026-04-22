@@ -1350,25 +1350,22 @@
                 // 检查是否已存在该主体的链接
                 const existingIndex = mockData.agreementLinks.findIndex(item => item.subjectId === subjectId);
                 if (existingIndex >= 0) {
-                    // 更新现有链接
-                    mockData.agreementLinks[existingIndex].url = url;
-                    mockData.agreementLinks[existingIndex].remark = remark || '-';
-                    mockData.agreementLinks[existingIndex].editor = '当前用户';
-                    mockData.agreementLinks[existingIndex].time = new Date().toLocaleString('zh-CN');
-                    alert('该主体已存在链接，已更新');
-                } else {
-                    // 新增链接
-                    const newItem = {
-                        id: Date.now(),
-                        url: url,
-                        subjectId: subjectId,
-                        remark: remark || '-',
-                        status: 'enabled',
-                        editor: '当前用户',
-                        time: new Date().toLocaleString('zh-CN')
-                    };
-                    mockData.agreementLinks.push(newItem);
+                    // 主体已存在，提示但不关闭弹窗
+                    alert('该主体已存在链接配置，请使用编辑功能修改');
+                    return;
                 }
+
+                // 新增链接
+                const newItem = {
+                    id: Date.now(),
+                    url: url,
+                    subjectId: subjectId,
+                    remark: remark || '-',
+                    status: 'enabled',
+                    editor: '当前用户',
+                    time: new Date().toLocaleString('zh-CN')
+                };
+                mockData.agreementLinks.push(newItem);
                 renderAgreementTable();
                 closeAddModal();
             }
